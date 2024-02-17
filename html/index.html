@@ -1,0 +1,38 @@
+<html>
+    <head>
+        <!-- Need to include jQuery! -->
+        <script src="nui://game/ui/jquery.js" type="text/javascript"></script>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/howler/2.1.1/howler.min.js" type="text/javascript"></script>
+        <script>
+            var music = null;
+            var audio = null;
+            var isPlaying = false;
+            // Listen for NUI Messages.
+            window.addEventListener('message', function(event) {
+              // Check for playSound transaction
+              if (event.data.transactionType == "startMusic" && isPlaying == false) {
+                startMusic(event)
+              }
+
+              // Changes volume
+              if (event.data.transactionType == "stopMusic" && isPlaying == true && event.data.transactionFile == audio) {
+                music.pause();
+                isPlaying = false
+              }
+            });
+
+            function startMusic(event) {
+              isPlaying = true
+              audio = event.data.transactionFile
+              console.log("started music")
+              music = new Howl({
+                src: ["./sounds/" + event.data.transactionFile + ".ogg"],
+                loop: true
+              });
+              music.volume(event.data.transactionVolume);
+              music.play();
+            }
+
+        </script>
+    </head>
+</html>
